@@ -10,6 +10,9 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>icon.ico</ApplicationIcon>
+    <AssemblyName>Pigeon</AssemblyName>
+    <Authors>VIsualizeKhumuang</Authors>
+    <Company>CAMT_DG</Company>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
