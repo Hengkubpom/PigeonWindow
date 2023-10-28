@@ -116,6 +116,18 @@
 /processorParam:TextureFormat=Color
 /build:effect/hit_effect.png
 
+#begin menu.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:menu.png
+
 #begin over_text.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
@@ -231,6 +243,12 @@
 /processorParam:Quality=Best
 /build:Sound/Sign.wav
 
+#begin Sound/UIopen.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sound/UIopen.wav
+
 #begin textfont_uid.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
@@ -285,6 +303,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:UI/car_button.png
+
+#begin UI/close_button.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/close_button.png
 
 #begin UI/confrim_button.png
 /importer:TextureImporter
@@ -406,6 +436,18 @@
 /processorParam:TextureFormat=Color
 /build:UI/pause_dark.png
 
+#begin UI/play_button.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/play_button.png
+
 #begin UI/police_button.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -417,6 +459,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:UI/police_button.png
+
+#begin UI/score.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/score.png
+
+#begin UI/scoreboard.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/scoreboard.png
 
 #begin UI/Setting-popup.png
 /importer:TextureImporter

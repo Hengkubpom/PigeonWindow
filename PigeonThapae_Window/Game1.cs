@@ -51,7 +51,7 @@ namespace PigeonThapae_Window
         private MouseState _mousestate, oldms;
         private Texture2D pigeon_texture, bg, kid_texure, barcolor, buy_bird, buy_car, food_texture, police_texture, sign_texture, buy_police, buy_sign;
         private Texture2D pigeon_fly, car_texture, board_ui, bar_grob, talk_texture, hit_effect, pause_1, pause_2, pause_dark, exit_texture, setting_popup, confirm, volume;
-        private Texture2D over_screen, home, retry, text_highscore, text_score;
+        private Texture2D over_screen, home, retry, text_highscore, text_score, scoreboard, close, menu, play, scorebutton;
         private List<Pigeon> bird = new List<Pigeon>();
         private List<kid> dek = new List<kid>();
         private List<food> bfood = new List<food>();
@@ -60,9 +60,9 @@ namespace PigeonThapae_Window
         private List<Car> _car = new List<Car>();
         private List<Ceffect> hit = new List<Ceffect>();
         private float elapsed, Media_elapsed = 0;        private Random rnd = new Random();
-        private bool attacked = false, pause = false, Gameover = false, start = false, allow_song_gameover = true, setting = false, highscore = false;
+        private bool attacked = false, pause = false, Gameover = false, start = false, allow_song_gameover = true,board = false, setting = false, highscore = false;
         private float time_pick = 0;
-        private Rectangle setting_exit, button_home, button_retry;
+        private Rectangle setting_exit, button_home, button_retry, button_close, button_play, button_score;
         private Rectangle bar, button_bird, button_sign, button_police, button_pause, button_car, none_area, none_area2, setting_button, button_exit;
         private Rectangle[] music_button = new Rectangle[10];
         private Rectangle[] seffect_button = new Rectangle[10];
@@ -106,6 +106,9 @@ namespace PigeonThapae_Window
             button_exit = new Rectangle(550, 750, 30, 26);
             button_home = new Rectangle(465, 670, 116, 38);
             button_retry = new Rectangle(605, 670, 140, 38);
+            button_close = new Rectangle(870, 180, 30, 32);
+            button_play = new Rectangle(734, 463, 280, 76);
+            button_score = new Rectangle(734, 583, 280, 76);
             setting_button = new Rectangle(1150, 0, 50, 50);
             for(int i = 0; i < music_button.Length; i++)
             {
@@ -191,6 +194,11 @@ namespace PigeonThapae_Window
             setting_popup = Content.Load<Texture2D>("UI/Setting-popup");
             volume = Content.Load<Texture2D>("UI/volume_button");
             confirm = Content.Load<Texture2D>("UI/confrim_button");
+            scoreboard = Content.Load<Texture2D>("UI/scoreboard");
+            close = Content.Load<Texture2D>("UI/close_button");
+            scorebutton = Content.Load<Texture2D>("UI/score");
+            play = Content.Load<Texture2D>("UI/play_button");
+            menu = Content.Load<Texture2D>("menu");
             bg = Content.Load<Texture2D>("bg");
             over_screen = Content.Load<Texture2D>("UI/over/over");
             home = Content.Load<Texture2D>("UI/over/home");
@@ -211,6 +219,7 @@ namespace PigeonThapae_Window
             sEffect.Add(Content.Load<SoundEffect>("Sound/Redcar2"));     //7
             sEffect.Add(Content.Load<SoundEffect>("Sound/Sign"));     //8
             sEffect.Add(Content.Load<SoundEffect>("Sound/onCooldown"));     //9
+            sEffect.Add(Content.Load<SoundEffect>("Sound/UIopen"));     //10
             SoundEffect.MasterVolume = main_volume_effect;
             MediaPlayer.Play(onLobby);
             MediaPlayer.Volume = main_volume;
@@ -233,13 +242,45 @@ namespace PigeonThapae_Window
                 //Console.WriteLine("Sign Cooldown = " + c_sign);
                 //Console.WriteLine("Car Cooldown = " + c_car);
                 //Console.WriteLine("Type = " + type_click);
-                //Console.WriteLine("timescore = " + time_score + " & " + time_scoreb);
-                //Console.WriteLine("money a = " + money_a + " & " + money_b);
-                //Console.WriteLine("bird a = " + bird_a + " & " + bird_b);
-                //Console.WriteLine("stage = " + stage + " & " + stageb);
+                Console.WriteLine("timescore = " + time_score + " & " + time_scoreb);
+                Console.WriteLine("money a = " + money_a + " & " + money_b);
+                Console.WriteLine("bird a = " + bird_a + " & " + bird_b);
+                Console.WriteLine("stage = " + stage + " & " + stageb);
                 //Console.WriteLine("Screen = " + screen
                 Console.WriteLine("main = " + main_volume);
                 Console.WriteLine("effect = " + main_volume_effect);
+            }
+            //reset highest
+            if(_keyboardState.IsKeyDown(Keys.P) & oldstate.IsKeyUp(Keys.P))
+            {
+                filepath = Path.Combine("../net6.0-windows/Content/data/time.bin");
+                file = new FileStream(filepath, FileMode.Create, FileAccess.Write);
+                writer = new BinaryWriter(file);
+                writer.Write((int)0);
+                writer.Flush();
+                writer.Close();
+                filepath = Path.Combine("../net6.0-windows/Content/data/stage.bin");
+                file = new FileStream(filepath, FileMode.Create, FileAccess.Write);
+                writer = new BinaryWriter(file);
+                writer.Write((int)0);
+                writer.Flush();
+                writer.Close();
+                filepath = Path.Combine("../net6.0-windows/Content/data/bird.bin");
+                file = new FileStream(filepath, FileMode.Create, FileAccess.Write);
+                writer = new BinaryWriter(file);
+                writer.Write((int)0);
+                writer.Flush();
+                writer.Close();
+                filepath = Path.Combine("../net6.0-windows/Content/data/money.bin");
+                file = new FileStream(filepath, FileMode.Create, FileAccess.Write);
+                writer = new BinaryWriter(file);
+                writer.Write((int)0);
+                writer.Flush();
+                writer.Close();
+                time_scoreb = 0;
+                bird_b = 0;
+                money_b = 0;
+                stageb = 0;
             }
             switch (screen)
             {
@@ -744,6 +785,13 @@ namespace PigeonThapae_Window
                             }
                             if (_keyboardState.IsKeyDown(Keys.Space) & oldstate.IsKeyUp(Keys.Space))
                             {
+                                if (allow_song_gameover)
+                                {
+                                    MediaPlayer.Volume = 0;
+                                    MediaPlayer.Play(onEnd);
+                                    allow_song_gameover = false;
+                                    MediaPlayer.IsRepeating = false;
+                                }
                                 screen = ScreenState.Over;
                             }
                         }
@@ -755,12 +803,21 @@ namespace PigeonThapae_Window
             {
                 if (setting_button.Contains(_mousestate.X, _mousestate.Y) & _mousestate.LeftButton == ButtonState.Pressed & oldms.LeftButton == ButtonState.Released)
                 {
-                    setting = true;
+                    if (!setting)
+                    {
+                        var instance = sEffect[10].CreateInstance();
+                        instance.Volume = 0.5f;
+                        instance.Play();
+                        setting = true;
+                    }
                 }
                 if (setting)
                 {
                     if (setting_exit.Contains(_mousestate.X, _mousestate.Y) & _mousestate.LeftButton == ButtonState.Pressed & oldms.LeftButton == ButtonState.Released)
                     {
+                        var instance = sEffect[10].CreateInstance();
+                        instance.Volume = 0.5f;
+                        instance.Play();
                         setting = false;
                     }
                     //block volume music
@@ -969,26 +1026,79 @@ namespace PigeonThapae_Window
 
             base.Draw(gameTime);
         }
-
+        private int h_hour = 0,h_minute = 0, h_second = 0;
         private void UpdateMenu(GameTime gameTime)
         {
+            float highest = time_scoreb;
             fade("in", (float)gameTime.ElapsedGameTime.TotalSeconds, 0.01f);
             if (start)
             {
                 ResetGame();
             }
-            if (_keyboardState.IsKeyDown(Keys.Enter) & oldstate.IsKeyUp(Keys.Enter))
+            if (_mousestate.LeftButton == ButtonState.Pressed & oldms.LeftButton == ButtonState.Released)
             {
-                MediaPlayer.Volume = 0;
-                MediaPlayer.Play(onPlay);
-                screen = ScreenState.Gameplay;
-
+                if (button_play.Contains(_mousestate.X, _mousestate.Y))
+                {
+                    var instance = sEffect[10].CreateInstance();
+                    instance.Volume = 0.5f;
+                    instance.Play();
+                    MediaPlayer.Volume = 0;
+                    MediaPlayer.Play(onPlay);
+                    screen = ScreenState.Gameplay;
+                }
+                if (button_score.Contains(_mousestate.X, _mousestate.Y))
+                {
+                    var instance = sEffect[10].CreateInstance();
+                    instance.Volume = 0.5f;
+                    instance.Play();
+                    board = true;
+                    if (highest >= 3600)
+                    {
+                        h_hour = (int)(highest / 3600);
+                        highest -= (h_hour * 3600);
+                    }
+                    if (highest >= 60)
+                    {
+                        h_minute = (int)(highest / 60);
+                        highest -= (h_minute * 60);
+                        h_second = (int)highest;
+                    }
+                    else
+                    {
+                        h_second = (int)highest;
+                    }
+                }
+            }
+            if (board)
+            {
+                if (button_close.Contains(_mousestate.X, _mousestate.Y) & _mousestate.LeftButton == ButtonState.Pressed & oldms.LeftButton == ButtonState.Released)
+                {
+                    var instance = sEffect[10].CreateInstance();
+                    instance.Volume = 0.5f;
+                    instance.Play();
+                    board = false;
+                }
             }
         }
         private void DrawMenu(SpriteBatch _spriteBatch)
         {
-            _spriteBatch.Draw(pause_dark, Vector2.Zero, Color.White);
+            _spriteBatch.Draw(menu, Vector2.Zero, Color.White);
+            _spriteBatch.Draw(play, button_play, Color.White);
+            _spriteBatch.Draw(scorebutton, button_score, Color.White);
+            if (board)
+            {
+                _spriteBatch.Draw(scoreboard, new Rectangle(250, 125, 700, 550), Color.White);
+                _spriteBatch.Draw(close, button_close, Color.White);
+                _spriteBatch.DrawString(cooldown_text, h_hour+"h "+h_minute+"m "+h_second+"s ", new Vector2(670, 285), Color.MidnightBlue);
+                _spriteBatch.DrawString(cooldown_text, Convert.ToString(bird_b), new Vector2(670, 365), Color.MidnightBlue);
+                _spriteBatch.DrawString(cooldown_text, Convert.ToString(money_b), new Vector2(670, 450), Color.MidnightBlue);
+                _spriteBatch.DrawString(cooldown_text, Convert.ToString(stageb), new Vector2(670, 540), Color.MidnightBlue);
+            }
         }
+
+
+
+        //over value
         private float over_time_text = 0;
         private int hour = 0, minute = 0, second = 0, over_bird = 0, over_money = 0, over_stage = 0;
         private bool over_time_success = false, overnum = false;
@@ -1048,12 +1158,18 @@ namespace PigeonThapae_Window
             {
                 if (button_home.Contains(_mousestate.X, _mousestate.Y))
                 {
+                    var instance = sEffect[10].CreateInstance();
+                    instance.Volume = 0.5f;
+                    instance.Play();
                     MediaPlayer.Volume = 0;
                     MediaPlayer.Play(onLobby);
                     screen = ScreenState.Menu;
                 }
                 if (button_retry.Contains(_mousestate.X, _mousestate.Y))
                 {
+                    var instance = sEffect[10].CreateInstance();
+                    instance.Volume = 0.5f;
+                    instance.Play();
                     ResetGame();
                     MediaPlayer.Volume = 0;
                     MediaPlayer.Play(onPlay);
@@ -1112,7 +1228,7 @@ namespace PigeonThapae_Window
             pause = false;
             Coin.worth = 5;
             highscore = false;
-            allow_song_gameover = false;
+            allow_song_gameover = true;
             overnum = false;
             over_time_success = false;
         }
