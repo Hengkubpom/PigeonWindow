@@ -236,7 +236,7 @@ namespace PigeonThapae_Window
             _mousestate = Mouse.GetState();
             _keyboardState = Keyboard.GetState();
             //debug
-            if (_keyboardState.IsKeyDown(Keys.Q) & oldstate.IsKeyUp(Keys.Q))
+            if (_keyboardState.IsKeyDown(Keys.F5) & oldstate.IsKeyUp(Keys.F5))
             {
                 Console.WriteLine("=====================");
                 //Console.WriteLine("Time = " + time_pick);
@@ -254,7 +254,7 @@ namespace PigeonThapae_Window
                 Console.WriteLine("effect = " + main_volume_effect);
             }
             //reset highest
-            if(_keyboardState.IsKeyDown(Keys.P) & oldstate.IsKeyUp(Keys.P))
+            if(_keyboardState.IsKeyDown(Keys.F4) & oldstate.IsKeyUp(Keys.F4))
             {
                 filepath = Path.Combine("../net6.0-windows/Content/data/time.bin");
                 file = new FileStream(filepath, FileMode.Create, FileAccess.Write);
@@ -393,11 +393,11 @@ namespace PigeonThapae_Window
 
 
                             //cheat
-                            if (_keyboardState.IsKeyDown(Keys.A) & oldstate.IsKeyUp(Keys.A))
+                            if (_keyboardState.IsKeyDown(Keys.F2) & oldstate.IsKeyUp(Keys.F2))
                             {
                                 money += 500;
                             }
-                            if (_keyboardState.IsKeyDown(Keys.R) & oldstate.IsKeyUp(Keys.R))
+                            if (_keyboardState.IsKeyDown(Keys.F1) & oldstate.IsKeyUp(Keys.F1))
                             {
                                 c_car = 0;
                                 c_sign = 0;
@@ -409,7 +409,7 @@ namespace PigeonThapae_Window
 
 
                             //spawn dek
-                            if (time_pick >= Time_spawn_dek || _keyboardState.IsKeyDown(Keys.H) & oldstate.IsKeyUp(Keys.H))
+                            if (time_pick >= Time_spawn_dek || _keyboardState.IsKeyDown(Keys.F3) & oldstate.IsKeyUp(Keys.F3))
                             {
                                 dek.Add(new kid(kid_texure, where_dekspawn, boss_health, barcolor));
                                 sEffect[0].CreateInstance().Play();
