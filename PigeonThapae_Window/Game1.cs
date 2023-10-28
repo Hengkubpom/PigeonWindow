@@ -943,7 +943,7 @@ namespace PigeonThapae_Window
                         break;
                     }
             }
-            _spriteBatch.Draw(pause_2, setting_button, Color.White);   //setting button
+            //_spriteBatch.Draw(pause_2, setting_button, Color.White);   //setting button
             if (setting)
             {
                 _spriteBatch.Draw(setting_popup, new Rectangle(250, 125, 700, 550), Color.White);
