@@ -48,9 +48,10 @@ namespace PigeonThapae_Window
         private SpriteBatch _spriteBatch;
         private SpriteFont uid_font, cooldown_text;
         private KeyboardState _keyboardState, oldstate;
-        private MouseState _mousestate, oldms, lastms;
+        private MouseState _mousestate, oldms;
         private Texture2D pigeon_texture, bg, kid_texure, barcolor, buy_bird, buy_car, food_texture, police_texture, sign_texture, buy_police, buy_sign;
         private Texture2D pigeon_fly, car_texture, board_ui, bar_grob, talk_texture, hit_effect, pause_1, pause_2, pause_dark, exit_texture, setting_popup, confirm, volume;
+        private Texture2D over_screen, home, retry, text_highscore, text_score;
         private List<Pigeon> bird = new List<Pigeon>();
         private List<kid> dek = new List<kid>();
         private List<food> bfood = new List<food>();
@@ -58,11 +59,10 @@ namespace PigeonThapae_Window
         private List<Sign> _sign = new List<Sign>();
         private List<Car> _car = new List<Car>();
         private List<Ceffect> hit = new List<Ceffect>();
-        private float elapsed, Media_elapsed = 0;
-        private Random rnd = new Random();
-        private bool attacked = false, pause = false, Gameover = false, start = false, allow_song_gameover = true, setting = false;
+        private float elapsed, Media_elapsed = 0;        private Random rnd = new Random();
+        private bool attacked = false, pause = false, Gameover = false, start = false, allow_song_gameover = true, setting = false, highscore = false;
         private float time_pick = 0;
-        private Rectangle setting_exit;
+        private Rectangle setting_exit, button_home, button_retry;
         private Rectangle bar, button_bird, button_sign, button_police, button_pause, button_car, none_area, none_area2, setting_button, button_exit;
         private Rectangle[] music_button = new Rectangle[10];
         private Rectangle[] seffect_button = new Rectangle[10];
@@ -82,7 +82,7 @@ namespace PigeonThapae_Window
         {
             Menu,
             Gameplay,
-            Board
+            Over
         }
 
         public Game1()
@@ -104,6 +104,8 @@ namespace PigeonThapae_Window
             button_car = new Rectangle(1010, 698, 190, 98);
             button_pause = new Rectangle(600, 750, 16, 26);
             button_exit = new Rectangle(550, 750, 30, 26);
+            button_home = new Rectangle(465, 670, 116, 38);
+            button_retry = new Rectangle(605, 670, 140, 38);
             setting_button = new Rectangle(1150, 0, 50, 50);
             for(int i = 0; i < music_button.Length; i++)
             {
@@ -190,6 +192,11 @@ namespace PigeonThapae_Window
             volume = Content.Load<Texture2D>("UI/volume_button");
             confirm = Content.Load<Texture2D>("UI/confrim_button");
             bg = Content.Load<Texture2D>("bg");
+            over_screen = Content.Load<Texture2D>("UI/over/over");
+            home = Content.Load<Texture2D>("UI/over/home");
+            retry = Content.Load<Texture2D>("UI/over/retry");
+            text_highscore = Content.Load<Texture2D>("UI/over/newhighscore");
+            text_score = Content.Load<Texture2D>("UI/over/score");
             onEnd = Content.Load<Song>("Sound/OnEnd");
             onFight = Content.Load<Song>("Sound/Onfight");
             onLobby = Content.Load<Song>("Sound/Onlobby");
@@ -241,9 +248,9 @@ namespace PigeonThapae_Window
                         UpdateMenu(gameTime);
                         break;
                     }
-                case ScreenState.Board:
+                case ScreenState.Over:
                     {
-                        UpdateBoard(gameTime);
+                        UpdateOver(gameTime);
                         break;
                     }
                 case ScreenState.Gameplay:
@@ -270,18 +277,10 @@ namespace PigeonThapae_Window
                             if (time_score > time_scoreb)
                             {
                                 time_scoreb = time_score;
-                            }
-                            if (stage > stageb)
-                            {
                                 stageb = stage;
-                            }
-                            if (money_a > money_b)
-                            {
                                 money_b = money_a;
-                            }
-                            if (bird_a > bird_b)
-                            {
                                 bird_b = bird_a;
+                                highscore = true;
                             }
                             filepath = Path.Combine("../net6.0-windows/Content/data/time.bin");
                             file = new FileStream(filepath, FileMode.Create, FileAccess.Write);
@@ -308,6 +307,7 @@ namespace PigeonThapae_Window
                             writer.Flush();
                             writer.Close();
                             MediaPlayer.IsRepeating = false;
+                            screen = ScreenState.Over;
                         }
 
                         //Game update all
@@ -742,6 +742,10 @@ namespace PigeonThapae_Window
                                     screen = ScreenState.Menu;
                                 }
                             }
+                            if (_keyboardState.IsKeyDown(Keys.Space) & oldstate.IsKeyUp(Keys.Space))
+                            {
+                                screen = ScreenState.Over;
+                            }
                         }
                         break;
                     }
@@ -797,9 +801,9 @@ namespace PigeonThapae_Window
                         DrawMenu(_spriteBatch);
                         break;
                     }
-                case ScreenState.Board:
+                case ScreenState.Over:
                     {
-                        DrawBoard(_spriteBatch);
+                        DrawOver(_spriteBatch);
                         break;
                     }
                 case ScreenState.Gameplay:
@@ -819,7 +823,6 @@ namespace PigeonThapae_Window
                         foreach (Pigeon ppbird in bird)
                         {
                             ppbird.Pigeondraw(_spriteBatch, uid_font);
-
                         }
                         //police
                         foreach (Police mini_police in _police)
@@ -843,7 +846,6 @@ namespace PigeonThapae_Window
                             if (!none_area.Contains(_mousestate.X, _mousestate.Y) & !none_area2.Contains(_mousestate.X, _mousestate.Y) & _mousestate.X < _graphics.GraphicsDevice.Viewport.Width & _mousestate.Y < _graphics.GraphicsDevice.Viewport.Height & _mousestate.X > 0 & _mousestate.Y > 0)
                             {
                                 _spriteBatch.Draw(sign_texture, new Vector2(_mousestate.X - (sign_texture.Width / 2), _mousestate.Y - (sign_texture.Height / 2)), Color.White);
-                                lastms = _mousestate;
                             }
                         }
                         _spriteBatch.Draw(board_ui, new Vector2(0, 642), Color.White);
@@ -982,28 +984,107 @@ namespace PigeonThapae_Window
                 screen = ScreenState.Gameplay;
 
             }
-            if (_keyboardState.IsKeyDown(Keys.Space) & oldstate.IsKeyUp(Keys.Space))
-            {
-                screen = ScreenState.Board;
-            }
         }
         private void DrawMenu(SpriteBatch _spriteBatch)
         {
             _spriteBatch.Draw(pause_dark, Vector2.Zero, Color.White);
         }
-
-
-        private void UpdateBoard(GameTime gameTime)
+        private float over_time_text = 0;
+        private int hour = 0, minute = 0, second = 0, over_bird = 0, over_money = 0, over_stage = 0;
+        private bool over_time_success = false, overnum = false;
+        private void UpdateOver(GameTime gameTime)
         {
-            if (_keyboardState.IsKeyDown(Keys.Escape) & oldstate.IsKeyUp(Keys.Escape))
+            fade("in", (float)gameTime.ElapsedGameTime.TotalSeconds, 0.01f);
+            if (over_time_text < 15000 & !over_time_success)
             {
-                screen = ScreenState.Menu;
+                over_time_text += 123;
+            }
+            else
+            {
+                over_time_success = true;
+                over_time_text = time_score;
+                over_time_text = (int)(over_time_text * 100);
+                over_time_text = over_time_text / 100;
+                if (!overnum)
+                {
+                    if(over_time_text >= 3600)
+                    {
+                        hour = (int)(over_time_text / 3600);
+                        over_time_text = over_time_text - (hour * 3600);
+                    }
+                    if(over_time_text >= 60)
+                    {
+                        minute = (int)(over_time_text / 60);
+                        second = (int)(over_time_text - (minute * 60));
+                    }
+                    else
+                    {
+                        second = (int)over_time_text;
+                    }
+                    overnum = true;
+                }
+            }
+            if(over_bird < bird_a)
+            {
+                over_bird += 1;
+            }
+            if (over_stage < stage)
+            {
+                over_stage += 1;
+            }
+            if(over_money < 2460 & over_money != money_a)
+            {
+                over_money += 123;
+            }
+            else
+            {
+                over_money = (int)money_a;
+            }
+
+            
+
+
+            if (_mousestate.LeftButton == ButtonState.Pressed & oldms.LeftButton == ButtonState.Released)
+            {
+                if (button_home.Contains(_mousestate.X, _mousestate.Y))
+                {
+                    MediaPlayer.Volume = 0;
+                    MediaPlayer.Play(onLobby);
+                    screen = ScreenState.Menu;
+                }
+                if (button_retry.Contains(_mousestate.X, _mousestate.Y))
+                {
+                    ResetGame();
+                    MediaPlayer.Volume = 0;
+                    MediaPlayer.Play(onPlay);
+                    screen = ScreenState.Gameplay;
+                }
             }
         }
-        private void DrawBoard(SpriteBatch _spriteBatch)
+        private void DrawOver(SpriteBatch _spriteBatch)
         {
-            _spriteBatch.Draw(pause_dark, Vector2.Zero, Color.White);
-            _spriteBatch.Draw(talk_texture, new Vector2(21, 561), Color.White);
+            _spriteBatch.Draw(over_screen, Vector2.Zero, Color.White);
+            if (highscore)
+            {
+                _spriteBatch.Draw(text_highscore, new Vector2(400, 370), Color.White);
+            }
+            else
+            {
+                _spriteBatch.Draw(text_score, new Vector2(450, 370), Color.White);
+            }
+            _spriteBatch.Draw(home, button_home, Color.White);
+            _spriteBatch.Draw(retry, button_retry, Color.White);
+            if (!over_time_success)
+            {
+                _spriteBatch.DrawString(uid_font, Convert.ToString(over_time_text), new Vector2(630, 440), Color.White);
+            }
+            else
+            {
+                _spriteBatch.DrawString(uid_font, hour + "h " + minute + "m " + second + "s ", new Vector2(610, 440), Color.White);
+            }
+            _spriteBatch.DrawString(uid_font, Convert.ToString(over_bird), new Vector2(630, 492), Color.White);
+            _spriteBatch.DrawString(uid_font, Convert.ToString(over_money), new Vector2(630, 555), Color.White);
+            _spriteBatch.DrawString(uid_font, Convert.ToString(over_stage), new Vector2(630, 610), Color.White);
         }
 
 
@@ -1030,6 +1111,10 @@ namespace PigeonThapae_Window
             attacked = false;
             pause = false;
             Coin.worth = 5;
+            highscore = false;
+            allow_song_gameover = false;
+            overnum = false;
+            over_time_success = false;
         }
 
         protected void fade(string type, float elapsed, float rate)
