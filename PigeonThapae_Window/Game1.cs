@@ -51,7 +51,7 @@ namespace PigeonThapae_Window
         private MouseState _mousestate, oldms;
         private Texture2D pigeon_texture, bg, kid_texure, barcolor, buy_bird, buy_car, food_texture, police_texture, sign_texture, buy_police, buy_sign;
         private Texture2D pigeon_fly, car_texture, board_ui, bar_grob, talk_texture, hit_effect, pause_1, pause_2, pause_dark, exit_texture, setting_popup, confirm, volume;
-        private Texture2D over_screen, home, retry, text_highscore, text_score, scoreboard, close, menu, play, scorebutton;
+        private Texture2D over_screen, home, retry, text_highscore, text_score, scoreboard, close, menu, play, scorebutton, settingicon, mouse_1,mouse_2;
         private List<Pigeon> bird = new List<Pigeon>();
         private List<kid> dek = new List<kid>();
         private List<food> bfood = new List<food>();
@@ -60,7 +60,7 @@ namespace PigeonThapae_Window
         private List<Car> _car = new List<Car>();
         private List<Ceffect> hit = new List<Ceffect>();
         private float elapsed, Media_elapsed = 0;        private Random rnd = new Random();
-        private bool attacked = false, pause = false, Gameover = false, start = false, allow_song_gameover = true,board = false, setting = false, highscore = false;
+        private bool attacked = false, pause = false, Gameover = false, start = false, allow_song_gameover = true, board = false, setting = false, highscore = false, click = false;
         private float time_pick = 0;
         private Rectangle setting_exit, button_home, button_retry, button_close, button_play, button_score;
         private Rectangle bar, button_bird, button_sign, button_police, button_pause, button_car, none_area, none_area2, setting_button, button_exit;
@@ -91,7 +91,7 @@ namespace PigeonThapae_Window
             _graphics.PreferredBackBufferWidth = 1200;
             _graphics.PreferredBackBufferHeight = 800;
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+            IsMouseVisible = false;
         }
 
         protected override void Initialize()
@@ -109,7 +109,7 @@ namespace PigeonThapae_Window
             button_close = new Rectangle(870, 180, 30, 32);
             button_play = new Rectangle(734, 463, 280, 76);
             button_score = new Rectangle(734, 583, 280, 76);
-            setting_button = new Rectangle(1150, 0, 50, 50);
+            setting_button = new Rectangle(1135, 15, 50, 50);
             for(int i = 0; i < music_button.Length; i++)
             {
                 music_button[i] = new Rectangle(555+(i*35), 318, 20, 28);
@@ -187,6 +187,9 @@ namespace PigeonThapae_Window
             cooldown_text = Content.Load<SpriteFont>("cooldown_text");
             talk_texture = Content.Load<Texture2D>("UI/talk");
             hit_effect = Content.Load<Texture2D>("effect/hit_effect");
+            settingicon = Content.Load<Texture2D>("UI/settingicon");
+            mouse_1 = Content.Load<Texture2D>("UI/mouse_1");
+            mouse_2 = Content.Load<Texture2D>("UI/mouse_2");
             pause_1 = Content.Load<Texture2D>("UI/pause_1");
             pause_2 = Content.Load<Texture2D>("UI/pause_2");
             pause_dark = Content.Load<Texture2D>("UI/pause_dark");
@@ -281,6 +284,17 @@ namespace PigeonThapae_Window
                 bird_b = 0;
                 money_b = 0;
                 stageb = 0;
+                h_hour = 0;
+                h_second = 0;
+                h_minute = 0;
+            }
+            if(_mousestate.LeftButton == ButtonState.Pressed)
+            {
+                click = true;
+            }
+            else
+            {
+                click = false;
             }
             switch (screen)
             {
@@ -1000,7 +1014,7 @@ namespace PigeonThapae_Window
                         break;
                     }
             }
-            //_spriteBatch.Draw(pause_2, setting_button, Color.White);   //setting button
+            _spriteBatch.Draw(settingicon, setting_button, Color.White);   //setting button
             if (setting)
             {
                 _spriteBatch.Draw(setting_popup, new Rectangle(250, 125, 700, 550), Color.White);
@@ -1022,6 +1036,14 @@ namespace PigeonThapae_Window
                     }
                 }
             }
+            if (!click)
+            {
+                _spriteBatch.Draw(mouse_1, new Vector2(_mousestate.X - 5, _mousestate.Y), Color.White); //cursor
+            }
+            else
+            {
+                _spriteBatch.Draw(mouse_2, new Vector2(_mousestate.X - 5, _mousestate.Y), Color.White);
+            }
             _spriteBatch.End();
 
             base.Draw(gameTime);
@@ -1035,7 +1057,7 @@ namespace PigeonThapae_Window
             {
                 ResetGame();
             }
-            if (_mousestate.LeftButton == ButtonState.Pressed & oldms.LeftButton == ButtonState.Released)
+            if (_mousestate.LeftButton == ButtonState.Pressed & oldms.LeftButton == ButtonState.Released & !setting & !board)
             {
                 if (button_play.Contains(_mousestate.X, _mousestate.Y))
                 {
@@ -1231,6 +1253,7 @@ namespace PigeonThapae_Window
             allow_song_gameover = true;
             overnum = false;
             over_time_success = false;
+            MediaPlayer.IsRepeating = true;
         }
 
         protected void fade(string type, float elapsed, float rate)
