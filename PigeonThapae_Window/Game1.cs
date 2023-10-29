@@ -123,7 +123,7 @@ namespace PigeonThapae_Window
             c_sign = cooldown_sign;
             c_police = cooldown_police;
             c_car = cooldown_car;
-            filepath = Path.Combine("../net6.0-windows/Content/data/time.bin");
+            filepath = Path.Combine(@"Content/data/time.bin");
             file = new FileStream(filepath, FileMode.Open, FileAccess.Read);
             //file = new FileStream(filepath, FileMode.Create, FileAccess.Write);
             reader = new BinaryReader(file);
@@ -133,7 +133,7 @@ namespace PigeonThapae_Window
             //writer.Write((int)40);
             //writer.Flush();
             //writer.Close();
-            filepath = Path.Combine("../net6.0-windows/Content/data/stage.bin");
+            filepath = Path.Combine(@"Content/data/stage.bin");
             file = new FileStream(filepath, FileMode.Open, FileAccess.Read);
             reader = new BinaryReader(file);
             stageb = (float)reader.ReadInt16();
@@ -143,7 +143,7 @@ namespace PigeonThapae_Window
             //writer.Write((int)30);
             //writer.Flush();
             //writer.Close();
-            filepath = Path.Combine("../net6.0-windows/Content/data/bird.bin");
+            filepath = Path.Combine(@"Content/data/bird.bin");
             file = new FileStream(filepath, FileMode.Open, FileAccess.Read);
             reader = new BinaryReader(file);
             bird_b = (float)reader.ReadInt16();
@@ -256,25 +256,25 @@ namespace PigeonThapae_Window
             //reset highest
             if(_keyboardState.IsKeyDown(Keys.F4) & oldstate.IsKeyUp(Keys.F4))
             {
-                filepath = Path.Combine("../net6.0-windows/Content/data/time.bin");
+                filepath = Path.Combine(@"Content/data/time.bin");
                 file = new FileStream(filepath, FileMode.Create, FileAccess.Write);
                 writer = new BinaryWriter(file);
                 writer.Write((int)0);
                 writer.Flush();
                 writer.Close();
-                filepath = Path.Combine("../net6.0-windows/Content/data/stage.bin");
+                filepath = Path.Combine(@"Content/data/stage.bin");
                 file = new FileStream(filepath, FileMode.Create, FileAccess.Write);
                 writer = new BinaryWriter(file);
                 writer.Write((int)0);
                 writer.Flush();
                 writer.Close();
-                filepath = Path.Combine("../net6.0-windows/Content/data/bird.bin");
+                filepath = Path.Combine(@"Content/data/bird.bin");
                 file = new FileStream(filepath, FileMode.Create, FileAccess.Write);
                 writer = new BinaryWriter(file);
                 writer.Write((int)0);
                 writer.Flush();
                 writer.Close();
-                filepath = Path.Combine("../net6.0-windows/Content/data/money.bin");
+                filepath = Path.Combine(@"Content/data/money.bin");
                 file = new FileStream(filepath, FileMode.Create, FileAccess.Write);
                 writer = new BinaryWriter(file);
                 writer.Write((int)0);
@@ -337,25 +337,25 @@ namespace PigeonThapae_Window
                                 bird_b = bird_a;
                                 highscore = true;
                             }
-                            filepath = Path.Combine("../net6.0-windows/Content/data/time.bin");
+                            filepath = Path.Combine(@"Content/data/time.bin");
                             file = new FileStream(filepath, FileMode.Create, FileAccess.Write);
                             writer = new BinaryWriter(file);
                             writer.Write((int)time_scoreb);
                             writer.Flush();
                             writer.Close();
-                            filepath = Path.Combine("../net6.0-windows/Content/data/stage.bin");
+                            filepath = Path.Combine(@"Content/data/stage.bin");
                             file = new FileStream(filepath, FileMode.Create, FileAccess.Write);
                             writer = new BinaryWriter(file);
                             writer.Write((int)stageb);
                             writer.Flush();
                             writer.Close();
-                            filepath = Path.Combine("../net6.0-windows/Content/data/bird.bin");
+                            filepath = Path.Combine(@"Content/data/bird.bin");
                             file = new FileStream(filepath, FileMode.Create, FileAccess.Write);
                             writer = new BinaryWriter(file);
                             writer.Write((int)bird_b);
                             writer.Flush();
                             writer.Close();
-                            filepath = Path.Combine("../net6.0-windows/Content/data/money.bin");
+                            filepath = Path.Combine(@"Content/data/money.bin");
                             file = new FileStream(filepath, FileMode.Create, FileAccess.Write);
                             writer = new BinaryWriter(file);
                             writer.Write((int)money_b);
@@ -797,17 +797,17 @@ namespace PigeonThapae_Window
                                     screen = ScreenState.Menu;
                                 }
                             }
-                            if (_keyboardState.IsKeyDown(Keys.Space) & oldstate.IsKeyUp(Keys.Space))
-                            {
-                                if (allow_song_gameover)
-                                {
-                                    MediaPlayer.Volume = 0;
-                                    MediaPlayer.Play(onEnd);
-                                    allow_song_gameover = false;
-                                    MediaPlayer.IsRepeating = false;
-                                }
-                                screen = ScreenState.Over;
-                            }
+                            //if (_keyboardState.IsKeyDown(Keys.Space) & oldstate.IsKeyUp(Keys.Space))
+                            //{
+                            //    if (allow_song_gameover)
+                            //    {
+                            //        MediaPlayer.Volume = 0;
+                            //        MediaPlayer.Play(onEnd);
+                            //        allow_song_gameover = false;
+                            //        MediaPlayer.IsRepeating = false;
+                            //    }
+                            //    screen = ScreenState.Over;
+                            //}
                         }
                         break;
                     }
@@ -959,7 +959,14 @@ namespace PigeonThapae_Window
                             _spriteBatch.DrawString(uid_font, holding_text, new Vector2(120, 590), Color.Black);
                         }
                         _spriteBatch.Draw(bar_grob, new Vector2(68, 666), Color.White);
-                        _spriteBatch.Draw(buy_bird, button_bird, Color.White);
+                        if(button_bird.Contains(_mousestate.X,_mousestate.Y) & _mousestate.LeftButton == ButtonState.Pressed & !setting)
+                        {
+                            _spriteBatch.Draw(buy_bird, button_bird, Color.Gray);
+                        }
+                        else
+                        {
+                            _spriteBatch.Draw(buy_bird, button_bird, Color.White);
+                        }
                         if (c_sign == 0)
                         {
                             _spriteBatch.Draw(buy_sign, button_sign, Color.White);
@@ -1014,11 +1021,25 @@ namespace PigeonThapae_Window
                         break;
                     }
             }
-            _spriteBatch.Draw(settingicon, setting_button, Color.White);   //setting button
+            if (setting_button.Contains(_mousestate.X, _mousestate.Y))
+            {
+                _spriteBatch.Draw(settingicon, setting_button, Color.Gray);
+            }
+            else
+            {
+                _spriteBatch.Draw(settingicon, setting_button, Color.White);   //setting button
+            }
             if (setting)
             {
                 _spriteBatch.Draw(setting_popup, new Rectangle(250, 125, 700, 550), Color.White);
-                _spriteBatch.Draw(confirm, setting_exit, Color.White);
+                if (setting_exit.Contains(_mousestate.X, _mousestate.Y))
+                {
+                    _spriteBatch.Draw(confirm, setting_exit, Color.Gray);
+                }
+                else
+                {
+                    _spriteBatch.Draw(confirm, setting_exit, Color.White);
+                }
                 //music
                 for (float i = 0; i < music_button.Length; i++)
                 {
@@ -1105,12 +1126,34 @@ namespace PigeonThapae_Window
         private void DrawMenu(SpriteBatch _spriteBatch)
         {
             _spriteBatch.Draw(menu, Vector2.Zero, Color.White);
-            _spriteBatch.Draw(play, button_play, Color.White);
-            _spriteBatch.Draw(scorebutton, button_score, Color.White);
+            if (button_play.Contains(_mousestate.X, _mousestate.Y) & !setting & !board)
+            {
+                _spriteBatch.Draw(play, button_play, Color.Gray);
+            }
+            else
+            {
+                _spriteBatch.Draw(play, button_play, Color.White);
+            }
+            if (button_score.Contains(_mousestate.X, _mousestate.Y) & !setting & !board)
+            {
+                _spriteBatch.Draw(scorebutton, button_score, Color.Gray);
+            }
+            else
+            {
+                _spriteBatch.Draw(scorebutton, button_score, Color.White);
+            }
             if (board)
             {
                 _spriteBatch.Draw(scoreboard, new Rectangle(250, 125, 700, 550), Color.White);
-                _spriteBatch.Draw(close, button_close, Color.White);
+                if (button_close.Contains(_mousestate.X, _mousestate.Y))
+                {
+                    _spriteBatch.Draw(close, button_close, Color.Gray);
+                }
+                else
+                {
+                    _spriteBatch.Draw(close, button_close, Color.White);
+                }
+                
                 _spriteBatch.DrawString(cooldown_text, h_hour+"h "+h_minute+"m "+h_second+"s ", new Vector2(670, 285), Color.MidnightBlue);
                 _spriteBatch.DrawString(cooldown_text, Convert.ToString(bird_b), new Vector2(670, 365), Color.MidnightBlue);
                 _spriteBatch.DrawString(cooldown_text, Convert.ToString(money_b), new Vector2(670, 450), Color.MidnightBlue);
@@ -1210,8 +1253,22 @@ namespace PigeonThapae_Window
             {
                 _spriteBatch.Draw(text_score, new Vector2(450, 370), Color.White);
             }
-            _spriteBatch.Draw(home, button_home, Color.White);
-            _spriteBatch.Draw(retry, button_retry, Color.White);
+            if (button_home.Contains(_mousestate.X, _mousestate.Y) & !setting)
+            {
+                _spriteBatch.Draw(home, button_home, Color.Gray);
+            }
+            else
+            {
+                _spriteBatch.Draw(home, button_home, Color.White);
+            }
+            if (button_retry.Contains(_mousestate.X, _mousestate.Y) & !setting)
+            {
+                _spriteBatch.Draw(retry, button_retry, Color.Gray);
+            }
+            else
+            {
+                _spriteBatch.Draw(retry, button_retry, Color.White);
+            }
             if (!over_time_success)
             {
                 _spriteBatch.DrawString(uid_font, Convert.ToString(over_time_text), new Vector2(630, 440), Color.White);
